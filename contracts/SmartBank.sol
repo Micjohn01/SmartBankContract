@@ -64,5 +64,30 @@ contract SmartBank {
         return true;
     }
 
+    // Function to transfer balance from the sender's account to another account
+    function transfer(address recipient, uint256 amount) public returns (bool) {
+        require(users[msg.sender].exists, "Sender account does not exist");
+        require(users[recipient].exists, "Recipient account does not exist");
+        uint256 availableBalance = getBalance(msg.sender);
+        require(availableBalance >= amount, "Insufficient balance");
+
+        User storage sender = users[msg.sender];
+        User storage receiver = users[recipient];
+
+        sender.balance -= amount;
+        receiver.balance += amount;
+
+        return true;
+    }
+
+    // Function to add funds directly to the contract (for testing purposes)
+    function addMoneyToBankContract() public payable {
+        totalBankBalance += msg.value;
+    }
+
+    // Fallback function to accept ether
+    receive() external payable {
+        totalBankBalance += msg.value;
+    }
 
 }
